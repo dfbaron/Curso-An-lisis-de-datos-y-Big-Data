@@ -1,3 +1,5 @@
+#uvicorn app:app --host 0.0.0.0 --port 8000
+
 import cv2
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from typing import Annotated
@@ -20,27 +22,25 @@ def preprocess_image(image: np.ndarray) -> np.ndarray:
     """
     if len(image.shape) == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        print(image.shape)
     image = cv2.resize(image, (28, 28))  # Redimensionar a 28x28 píxeles
-    print(image.shape)
     image = image / 255.0  # Normalizar los valores de los píxeles
     image = image.reshape(1, 28, 28)  # Ajustar la forma del array
     return image
 
 @app.post("/predict")
 async def predict(input_image: Annotated[UploadFile, File()]):
-    #try:
-    # Leer la imagen subida
-    image_data = await input_image.read()
-    image = np.array(Image.open(BytesIO(image_data)))
+    try:
+        # Leer la imagen subida
+        image_data = await input_image.read()
+        image = np.array(Image.open(BytesIO(image_data)))
 
-    # Preprocesar la imagen
-    image_p = preprocess_image(image)
+        # Preprocesar la imagen
+        image_p = preprocess_image(image)
 
-    # Realizar la predicción
-    prediction = model.predict(image_p).argmax(axis=1)
+        # Realizar la predicción
+        prediction = model.predict(image_p).argmax(axis=1)
 
-    return {"prediction": int(prediction[0])}
-    """except Exception as e:
+        return {"prediction": int(prediction[0])}
+    except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error al procesar la imagen: {str(e)}")
-    """
+    

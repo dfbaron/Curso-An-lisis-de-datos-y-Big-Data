@@ -7,7 +7,7 @@ url = f"http://{ip}:{port}/"
 
 def test_model_prediction(url):
     # Read the image file
-    image_path = 'fashion_mnist_images/image_0_categoria_9.jpg'
+    image_path = 'fashion_mnist_images/image_9_categoria_7.jpg'
     with open(image_path, "rb") as file:
         image_data = file.read()
 
